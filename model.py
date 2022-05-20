@@ -52,17 +52,17 @@ def _preprocess_data(data):
        'Seville_humidity', 'Bilbao_wind_speed', 'Barcelona_pressure',
        'Bilbao_pressure', 'Madrid_pressure', 'Valencia_humidity',
        'Barcelona_temp', 'Bilbao_temp', 'Madrid_temp']]
-    df_clean['time'] = pd.to_datetime(df_clean['time'])
-    df_clean['Valencia_wind_deg'] = df_clean.Valencia_wind_deg.str.extract('(\d+)')
-    df_clean['Valencia_wind_deg'] = pd.to_numeric(df_clean['Valencia_wind_deg'])
+    df_clean.loc[:,'time'] = pd.to_datetime(df_clean['time'])
+    df_clean.loc[:, 'Valencia_wind_deg'] = df_clean.Valencia_wind_deg.str.extract('(\d+)')
+    df_clean.loc[:, 'Valencia_wind_deg'] = pd.to_numeric(df_clean['Valencia_wind_deg'])
 
 
     # create new features
-    df_clean['year'] = df_clean['time'].dt.year
-    df_clean['month'] = df_clean['time'].dt.month
-    df_clean['day'] = df_clean['time'].dt.day
-    df_clean['hour'] = df_clean['time'].dt.hour
-    df_clean['weekday'] = df_clean['time'].dt.weekday
+    df_clean.loc[:, 'year'] = df_clean['time'].dt.year
+    df_clean.loc[:, 'month'] = df_clean['time'].dt.month
+    df_clean.loc[:, 'day'] = df_clean['time'].dt.day
+    df_clean.loc[:, 'hour'] = df_clean['time'].dt.hour
+    df_clean.loc[: 'weekday'] = df_clean['time'].dt.weekday
     df_clean = df_clean.drop('time', axis=1) 
 
     #fill any missing value with mean of that column
