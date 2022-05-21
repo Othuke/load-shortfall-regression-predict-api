@@ -47,29 +47,31 @@ def _preprocess_data(data):
     # receive marks for submitting this code in an unchanged state.
     # ---------------------------------------------------------------
 
-    # ----------- Replace this code with your own preprocessing steps --------
-    df_clean = df[['time','Madrid_wind_speed', 'Valencia_wind_deg', 'Valencia_wind_speed',
-       'Seville_humidity', 'Bilbao_wind_speed', 'Barcelona_pressure',
-       'Bilbao_pressure', 'Madrid_pressure', 'Valencia_humidity',
-       'Barcelona_temp', 'Bilbao_temp', 'Madrid_temp']]
-    df_clean.loc[:,'time'] = pd.to_datetime(df_clean['time'])
-    df_clean.loc[:, 'Valencia_wind_deg'] = df_clean.Valencia_wind_deg.str.extract('(\d+)')
-    df_clean.loc[:, 'Valencia_wind_deg'] = pd.to_numeric(df_clean['Valencia_wind_deg'])
+    # ----------- Replace this code with your own preprocessing steps ---------
+    # replace null values in valencia pressure with mode
+    df['Valencia_pressure'] = df['Valencia_pressure'].fillna(df['Valencia_pressure'].mode()[0])
+    
+    #create new features from time column
+    df.loc[:, 'year'] = df['time'].dt.year
+    df.loc[:, 'month'] = df['time'].dt.month
+    df.loc[:, 'day'] = df['time'].dt.day
+    df.loc[:, 'hour'] = df['time'].dt.hour
+    df.loc[:, 'weekday'] = df['time'].dt.weekday
+    
+    # Remove unwanted columns
+    identifiers= ['Unnamed: 0', 'Barcelona_weather_id', 'Madrid_weather_id', 'Seville_weather_id','Bilbao_weather_id']
+    multicol_features =['Madrid_temp_min','Seville_temp_min','Barcelona_temp_min', 'Bilbao_temp_min', 'Valencia_temp_min', 
+                   'Bilbao_temp_max', 'Madrid_temp_max','Barcelona_temp_max', 'Valencia_temp_max', 'Seville_temp_max',
+                   'Seville_clouds_all','Bilbao_clouds_all', 'Madrid_clouds_all']
+    one_hourly = ['Bilbao_rain_1h', 'Seville_rain_1h','Madrid_rain_1h','Barcelona_rain_1h', 'time']
+    df = df.drop(identifiers+multicol_features+one_hourly, axis =1)
 
-
-    # create new features
-    df_clean.loc[:, 'year'] = df_clean['time'].dt.year
-    df_clean.loc[:, 'month'] = df_clean['time'].dt.month
-    df_clean.loc[:, 'day'] = df_clean['time'].dt.day
-    df_clean.loc[:, 'hour'] = df_clean['time'].dt.hour
-    df_clean.loc[:, 'weekday'] = df_clean['time'].dt.weekday
-    df_clean = df_clean.drop('time', axis=1) 
-
-    #fill any missing value with mean of that column
-    df_clean = df_clean.fillna(df_clean.mean())
+    #select columns based of step forward feature selection
+    cols = [0, 1, 6, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 21, 23, 25, 26, 27, 28, 29]
+    df = df[df.columns[[cols]]]
     # ------------------------------------------------------------------------
 
-    return df_clean
+    return df
 
 def load_model(path_to_model:str):
     """Adapter function to load our pretrained model into memory.
