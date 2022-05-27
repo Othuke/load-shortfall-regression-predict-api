@@ -30,7 +30,7 @@ app = Flask(__name__)
 # Load our model into memory.
 # Please update this path to reflect your own trained model.
 static_model = load_model(
-    path_to_model='assets/trained-models/load_shortfall_extra_trees_regressor.pkl')
+    path_to_model='assets/trained-models/load_shortfall_random forest_regressor.pkl')
 
 print ('-'*40)
 print ('Model successfully loaded')
