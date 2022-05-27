@@ -49,14 +49,13 @@ def _preprocess_data(data):
 
     # ----------- Replace this code with your own preprocessing steps ---------
     # convert datatype
+       #convert datatype
     df['time'] = pd.to_datetime(df['time'])
     df['Valencia_wind_deg'] = df.Valencia_wind_deg.str.extract('(\d+)')
     df['Seville_pressure'] = df.Seville_pressure.str.extract('(\d+)')
     df['Seville_pressure'] = pd.to_numeric(df['Seville_pressure'])
     df['Valencia_wind_deg'] = pd.to_numeric(df['Valencia_wind_deg'])
     
-    #fill null values
-    df['Valencia_pressure'] = df['Valencia_pressure'].fillna(df['Valencia_pressure'].mode()[0])
     
     df.loc[:, 'year'] = df['time'].dt.year
     df.loc[:, 'month'] = df['time'].dt.month
@@ -68,11 +67,11 @@ def _preprocess_data(data):
     identifiers= ['Unnamed: 0', 'Barcelona_weather_id', 'Madrid_weather_id', 'Seville_weather_id','Bilbao_weather_id']
     multicol_features =['Madrid_temp_min','Seville_temp_min','Barcelona_temp_min', 'Bilbao_temp_min', 'Valencia_temp_min', 
                    'Bilbao_temp_max', 'Madrid_temp_max','Barcelona_temp_max', 'Valencia_temp_max', 'Seville_temp_max',
-                   'Seville_clouds_all','Bilbao_clouds_all', 'Madrid_clouds_all']
+                   'Seville_clouds_all','Bilbao_clouds_all', 'Madrid_clouds_all','Valencia_pressure']
     one_hourly = ['Bilbao_rain_1h', 'Seville_rain_1h','Madrid_rain_1h','Barcelona_rain_1h', 'time']
     df = df.drop(identifiers+multicol_features+one_hourly, axis =1)
     #select columns based of step forward feature selection
-    cols = [0, 1, 6, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 21, 23, 25, 26, 27, 28, 29]
+    cols = [0, 1, 6, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 21, 23, 25, 26, 27, 28]
     df = df[df.columns[[cols]]]
     
     # ------------------------------------------------------------------------
