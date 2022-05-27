@@ -50,13 +50,18 @@ def _preprocess_data(data):
     # ----------- Replace this code with your own preprocessing steps ---------
     # convert datatype
        #convert datatype
-    df['time'] = pd.to_datetime(df['time'])
-    df['Valencia_wind_deg'] = df.Valencia_wind_deg.str.extract('(\d+)')
-    df['Seville_pressure'] = df.Seville_pressure.str.extract('(\d+)')
-    df['Seville_pressure'] = pd.to_numeric(df['Seville_pressure'])
+    df['time'] = pd.to_datetime(df['time']) #convert to datetime
+    df['Valencia_wind_deg'] = df.Valencia_wind_deg.astype(str).str.extract('(\d+)')# first, extract the numbers only
+    df['Seville_pressure'] = df.Seville_pressure.astype(str).str.extract('(\d+)')#first, extract the numbers only
+    df['Seville_pressure'] = pd.to_numeric(df['Seville_pressure']) # then convert to numeric data-type
     df['Valencia_wind_deg'] = pd.to_numeric(df['Valencia_wind_deg'])
     
+    for col in df.columns:
+        if df[col].isnull().sum() > 0:
+            df[col] = df[col].fillna(0)
+        
     
+    #create new features from time column
     df.loc[:, 'year'] = df['time'].dt.year
     df.loc[:, 'month'] = df['time'].dt.month
     df.loc[:, 'day'] = df['time'].dt.day
@@ -67,11 +72,11 @@ def _preprocess_data(data):
     identifiers= ['Unnamed: 0', 'Barcelona_weather_id', 'Madrid_weather_id', 'Seville_weather_id','Bilbao_weather_id']
     multicol_features =['Madrid_temp_min','Seville_temp_min','Barcelona_temp_min', 'Bilbao_temp_min', 'Valencia_temp_min', 
                    'Bilbao_temp_max', 'Madrid_temp_max','Barcelona_temp_max', 'Valencia_temp_max', 'Seville_temp_max',
-                   'Seville_clouds_all','Bilbao_clouds_all', 'Madrid_clouds_all','Valencia_pressure']
+                   'Seville_clouds_all','Bilbao_clouds_all', 'Madrid_clouds_all']
     one_hourly = ['Bilbao_rain_1h', 'Seville_rain_1h','Madrid_rain_1h','Barcelona_rain_1h', 'time']
     df = df.drop(identifiers+multicol_features+one_hourly, axis =1)
     #select columns based of step forward feature selection
-    cols = [0, 1, 6, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 21, 23, 25, 26, 27, 28]
+    cols = [0, 2, 4, 5, 6, 7, 9, 11, 12, 13, 14, 15, 17, 25, 26, 27, 28, 29]
     df = df[df.columns[[cols]]]
     
     # ------------------------------------------------------------------------
